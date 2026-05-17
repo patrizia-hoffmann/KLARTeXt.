@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR-Code Generator · KLARTEXt</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700&family=Source+Sans+3:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blue:   #6a7fa3;
+      --rose:   #e8c9bb;
+      --rose-bg:#f5ede8;
+      --gold:   #b8924a;
+      --gray:   #555555;
+      --light:  #e0e0e0;
+      --white:  #ffffff;
+      --black:  #1a1a1a;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100dvh;
+      background: linear-gradient(160deg, var(--rose-bg) 0%, #eaf3f3 100%);
+      font-family: 'Source Sans 3', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: var(--blue);
+      padding: 14px 24px;
+      z-index: 10;
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.05em;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-sub {
+      font-size: 8px;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .card {
+      margin-top: 70px;
+      background: var(--white);
+      border-top: 3px solid #a8cece;
+      border-radius: 4px;
+      padding: 40px 36px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 4px 24px rgba(106,127,163,0.10);
+      text-align: center;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: #8a8ab0;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 12px;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gray);
+      margin-bottom: 32px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--light);
+      border-radius: 4px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--black);
+      background: var(--rose-bg);
+      outline: none;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--blue); }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background: var(--blue);
+      color: var(--white);
+      border: none;
+      border-radius: 4px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      margin-bottom: 32px;
+    }
+    button:hover { opacity: 0.85; }
+
+    #qr-wrap {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    #qr-wrap.visible { display: flex; }
+
+    #qrcode {
+      padding: 16px;
+      background: var(--white);
+      border: 1px solid var(--light);
+      display: inline-block;
+    }
+    #qrcode canvas, #qrcode img {
+      display: block;
+    }
+
+    .download-btn {
+      display: inline-block;
+      padding: 10px 24px;
+      background: var(--rose);
+      color: var(--black);
+      border: none;
+      border-radius: 4px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      width: auto;
+      margin-bottom: 0;
+      transition: opacity 0.2s;
+    }
+    .download-btn:hover { opacity: 0.8; }
+
+    .hint {
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    .footer {
+      margin-top: 32px;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gray);
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">KLAR Te<span>X</span>t.</div>
+  <div class="nav-sub">Das Magazin mit Haltung</div>
+</nav>
+
+<div class="card">
+  <h1>QR-Code Generator</h1>
+  <p class="subtitle">Für die Achtsamkeitsübung</p>
+
+  <input type="url" id="urlInput"
+    placeholder="https://patrizia-hoffmann.github.io/KLARTeXt"
+    value="https://patrizia-hoffmann.github.io/KLARTeXt" />
+
+  <button onclick="generateQR()">QR-Code erstellen</button>
+
+  <div id="qr-wrap">
+    <div id="qrcode"></div>
+    <button class="download-btn" onclick="downloadQR()">⬇ Als PNG herunterladen</button>
+    <p class="hint">Für den Druck: PNG in höchster Auflösung speichern.<br>Mindestgröße im Druck: 2 × 2 cm.</p>
+  </div>
+</div>
+
+<p class="footer">© KLARTEXt · Alle Rechte vorbehalten</p>
+
+<script>
+  let qrInstance = null;
+
+  function generateQR() {
+    const url = document.getElementById('urlInput').value.trim();
+    if (!url) return;
+
+    const wrap = document.getElementById('qr-wrap');
+    const container = document.getElementById('qrcode');
+
+    // Alten QR-Code löschen
+    container.innerHTML = '';
+    if (qrInstance) qrInstance = null;
+
+    qrInstance = new QRCode(container, {
+      text: url,
+      width: 220,
+      height: 220,
+      colorDark: '#1a1a1a',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+    wrap.classList.add('visible');
+  }
+
+  function downloadQR() {
+    const canvas = document.querySelector('#qrcode canvas');
+    if (!canvas) return;
+    const link = document.createElement('a');
+    link.download = 'klartext-achtsamkeit-qrcode.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+
+  // Direkt beim Laden generieren
+  window.addEventListener('load', generateQR);
+</script>
+</body>
+</html>
