@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Achtsamkeit · KLARTEXt</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    /* -------------------------------------------------------
+       FARBEN — entnommen aus den KLARTEXt-Screenshots:
+       - Stahlblau (Navigation)      → --blue
+       - Altrosa (Hintergrundblöcke) → --rose
+       - Hellmint (Türen-Bild)       → --mint (dezent als Akzent)
+       - Lavendel (Überschriften)    → --lavender
+       - Gold/Bronze (Logo-X)        → --gold
+       - Helles Grau (Seiten-BG)     → --bg
+    ------------------------------------------------------- */
+    :root {
+      --blue:     #6a7fa3;   /* Navigationsleiste */
+      --rose:     #e8c9bb;   /* Altrosa Hintergrund */
+      --rose-bg:  #f5ede8;   /* helles Rosa für Seiten-BG */
+      --mint:     #a8cece;   /* Hellblau/Mint */
+      --lavender: #8a8ab0;   /* Lila Überschriften */
+      --gold:     #b8924a;   /* Logo-X Bronze */
+      --black:    #1a1a1a;
+      --gray:     #555555;
+      --lightgray:#e0e0e0;
+      --white:    #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100dvh;
+      /* Sanfter Gradient aus Altrosa → Hellmint wie auf der Website */
+      background: linear-gradient(160deg, var(--rose-bg) 0%, #eaf3f3 100%);
+      font-family: 'Source Sans 3', sans-serif;
+      color: var(--black);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    /* -------------------------------------------------------
+       NAVIGATIONSLEISTE — wie auf der KLARTEXt-Website:
+       Stahlblau, weißer Text, Logo links
+    ------------------------------------------------------- */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: var(--blue);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      z-index: 10;
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.05em;
+    }
+    .nav-logo span {
+      color: var(--gold); /* Das X in Gold */
+    }
+    .nav-sub {
+      font-size: 8px;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      margin-left: 2px;
+    }
+
+    /* -------------------------------------------------------
+       HAUPTINHALT — mit Abstand zur fixierten Nav
+    ------------------------------------------------------- */
+    .content {
+      margin-top: 56px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* -------------------------------------------------------
+       HERO-BEREICH
+       Altrosa Hintergrundblock — wie die farbigen Sektionen
+       auf der KLARTEXt-Website
+    ------------------------------------------------------- */
+    .hero {
+      width: 100%;
+      background: var(--rose);
+      padding: 48px 24px 40px;
+      text-align: center;
+      margin-bottom: 0;
+    }
+    .hero-rubric {
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--lavender);
+      margin-bottom: 12px;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 2.4rem;
+      font-weight: 400;
+      color: var(--lavender);  /* Lavendel wie die Hero-Überschriften */
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .hero .intro {
+      font-size: 0.95rem;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--gray);
+      max-width: 360px;
+      margin: 0 auto;
+    }
+
+    /* -------------------------------------------------------
+       PLAYER-CARD
+       Weiß auf hellem Hintergrund — sauber abgesetzt
+    ------------------------------------------------------- */
+    .card {
+      background: var(--white);
+      border-top: 3px solid var(--mint); /* Mint-Akzent oben */
+      padding: 36px 36px 32px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 4px 24px rgba(106,127,163,0.10);
+    }
+
+    audio { display: none; }
+
+    /* Fortschrittsbalken in Stahlblau */
+    .progress-wrap {
+      height: 2px;
+      background: var(--lightgray);
+      margin: 0 0 10px;
+      cursor: pointer;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--mint));
+      width: 0%;
+      transition: width 0.4s linear;
+      pointer-events: none;
+    }
+    .time-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--gray);
+      letter-spacing: 0.05em;
+      margin-bottom: 28px;
+    }
+
+    /* Steuerelemente */
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding-top: 8px;
+    }
+    .btn-skip {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--lightgray);
+      padding: 8px;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+    }
+    .btn-skip:hover { color: var(--blue); }
+
+    /* Play-Button: Stahlblau wie die Website-Buttons */
+    .btn-play {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: var(--blue);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s, transform 0.15s;
+      box-shadow: 0 2px 12px rgba(106,127,163,0.25);
+    }
+    .btn-play:hover { opacity: 0.85; transform: scale(1.04); }
+    .btn-play svg { color: var(--white); }
+
+    /* -------------------------------------------------------
+       FOOTER — wie auf der KLARTEXt-Website
+    ------------------------------------------------------- */
+    .footer {
+      margin-top: 32px;
+      font-size: 10px;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gray);
+      text-align: center;
+      opacity: 0.6;
+    }
+
+    /* Hinweis (verschwindet sobald Audio geladen) */
+    .hint {
+      margin-top: 24px;
+      padding: 12px 16px;
+      border: 1px dashed var(--lightgray);
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+    .hint code {
+      background: var(--rose-bg);
+      padding: 1px 5px;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATIONSLEISTE (Stahlblau wie KLARTEXt) -->
+  <nav class="nav">
+    <div>
+      <div class="nav-logo">KLAR Te<span>X</span>t.</div>
+      <div class="nav-sub">Das Magazin mit Haltung</div>
+    </div>
+  </nav>
+
+  <div class="content">
+
+    <!-- HERO: Altrosa Sektion mit Lavendel-Titel -->
+    <div class="hero">
+      <p class="hero-rubric">Geführte Übung</p>
+      <h1>Achtsamkeit</h1>
+      <!-- Einleitungstext → hier anpassen -->
+      <p class="intro">
+        Nimm dir fünf Minuten nur für dich.<br>
+        Diese Übung lädt dich ein, innezuhalten und
+        bewusst in den gegenwärtigen Moment zu kommen.
+      </p>
+    </div>
+
+    <!-- PLAYER-CARD -->
+    <div class="card">
+
+      <audio id="audio" src="audio.mp3" preload="metadata"></audio>
+
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="time-row">
+        <span id="timeCurrent">0:00</span>
+        <span id="timeDuration">–:––</span>
+      </div>
+
+      <div class="controls">
+        <button class="btn-skip" id="btnBack" title="15 Sek. zurück">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"/>
+            <path d="M3.51 15a9 9 0 1 0 .49-3.96"/>
+            <text x="7.5" y="17" font-size="5.5" font-family="sans-serif" fill="currentColor" stroke="none">15</text>
+          </svg>
+        </button>
+
+        <button class="btn-play" id="btnPlay" title="Abspielen">
+          <svg id="iconPlay" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5,3 19,12 5,21"/>
+          </svg>
+          <svg id="iconPause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display:none">
+            <rect x="6" y="3" width="4" height="18" rx="1"/>
+            <rect x="14" y="3" width="4" height="18" rx="1"/>
+          </svg>
+        </button>
+
+        <button class="btn-skip" id="btnFwd" title="15 Sek. vor">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-.49-3.96"/>
+            <text x="7.5" y="17" font-size="5.5" font-family="sans-serif" fill="currentColor" stroke="none">15</text>
+          </svg>
+        </button>
+      </div>
+
+      <div class="hint" id="hint">
+        <strong>Hinweis:</strong> Audiodatei <code>audio.mp3</code> im gleichen Ordner ablegen —
+        der Player funktioniert dann automatisch. Bei M4A: <code>audio.m4a</code> im Code ändern.
+      </div>
+
+    </div>
+
+    <p class="footer">© KLARTEXt · Alle Rechte vorbehalten</p>
+
+  </div>
+
+  <script>
+    const audio        = document.getElementById('audio');
+    const btnPlay      = document.getElementById('btnPlay');
+    const iconPlay     = document.getElementById('iconPlay');
+    const iconPause    = document.getElementById('iconPause');
+    const progressFill = document.getElementById('progressFill');
+    const progressWrap = document.getElementById('progressWrap');
+    const timeCurrent  = document.getElementById('timeCurrent');
+    const timeDuration = document.getElementById('timeDuration');
+    const hint         = document.getElementById('hint');
+
+    function fmt(s) {
+      if (!isFinite(s)) return '–:––';
+      return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+    }
+    audio.addEventListener('loadedmetadata', () => {
+      timeDuration.textContent = fmt(audio.duration);
+      hint.style.display = 'none';
+    });
+    audio.addEventListener('timeupdate', () => {
+      const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
+      progressFill.style.width = pct + '%';
+      timeCurrent.textContent = fmt(audio.currentTime);
+    });
+    audio.addEventListener('ended', () => {
+      iconPlay.style.display = '';
+      iconPause.style.display = 'none';
+    });
+    btnPlay.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play().catch(() => {});
+        iconPlay.style.display = 'none';
+        iconPause.style.display = '';
+      } else {
+        audio.pause();
+        iconPlay.style.display = '';
+        iconPause.style.display = 'none';
+      }
+    });
+    document.getElementById('btnBack').addEventListener('click', () => {
+      audio.currentTime = Math.max(0, audio.currentTime - 15);
+    });
+    document.getElementById('btnFwd').addEventListener('click', () => {
+      audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 15);
+    });
+    progressWrap.addEventListener('click', (e) => {
+      if (!audio.duration) return;
+      const rect = progressWrap.getBoundingClientRect();
+      audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
+    });
+  </script>
+</body>
+</html>
